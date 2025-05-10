@@ -8,11 +8,19 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
       with:
-        fetch-depth: 0
-        lfs: true
-    - name: Push to hub
+        fetch-depth: 0 # 获取所有历史记录，这对于 LFS 和完整的 git push 通常是必要的
+        lfs: true      # 如果您的仓库使用 Git LFS，请保留此项
+
+    - name: Push to Hugging Face Hub
       env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: git push https://mariahlamb:$HF_TOKEN@huggingface.co/spaces/mariahlamb/nalayou main
+        HF_TOKEN: ${{ secrets.HF_TOKEN }} # 请确保在 GitHub Secrets 中正确设置了 HF_TOKEN
+      run: |
+        # 添加 --force 标志以强制推送。
+        # 这将覆盖远程 main 分支上任何本地不存在的提交。
+        # 请谨慎使用，确保这是您期望的行为。
+        git push --force https://mariahlamb:$HF_TOKEN@huggingface.co/spaces/mariahlamb/nalayou main
+        # 或者更明确地指定本地 main 推送到远程 main：
+        # git push --force https://mariahlamb:$HF_TOKEN@huggingface.co/spaces/mariahlamb/nalayou main:main
